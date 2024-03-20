@@ -31,11 +31,3 @@ Contributions to this project are welcome. If you encounter any issues or have i
 
 ## **License**
 This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-## **Acknowledgements**
-- The EHO-GAN implementation was inspired by [cite source].
-- Feature map fusion techniques were adapted from [cite source].
-- Special thanks to [contributors] for their valuable contributions to the project.
-
-## **Contact**
-For questions or inquiries, please contact [project maintainers].
