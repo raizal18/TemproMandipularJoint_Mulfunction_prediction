@@ -1,0 +1,55 @@
+function [anchorBoxes,meanIoU,bbox,cmeansModel]=beliefcMeans(tb)
+condyle=tb.Condyle;
+
+trainingData = boxLabelDatastore(tb(:,3:end));
+feat=roi2feature(condyle);
+
+file=tb.imageFilename;
+
+imdsIm=imageDatastore(file);
+nt=alexnet();
+
+si=nt.Layers(1).InputSize;
+imdsT=transform(imdsIm,@(x)(imresize(x,si(1:2))));
+
+tic
+reset(imdsT)
+f=uifigure('Color','White','Position',[393   327   407   114],'Alphamap',0.9);
+d = uiprogressdlg(f,'Title','Please Wait',...
+        'Message','Clsutering boundary Box');
+pause(.5)
+m=200;
+% m=length(imdsIm.Files);
+for i=1:m
+    d.Value =i/m;
+    im=read(imdsT);
+    imfeat(i,:)=activations(nt,im,23);    
+end
+toc
+
+d = uiprogressdlg(f,'Title','Please Wait',...
+        'Message','Completed');
+try
+    close(f)
+catch
+    
+end
+
+% numAnchors = 5;
+% [anchorBoxes,meanIoU] = estimateAnchorBoxes(trainingData,numAnchors);
+
+load cmeansCenters.mat
+
+load BCM.mat
+
+bbox=evalfis(cmeansModel,feat(:,1:end-1));
+
+maxNumAnchors = 15;
+meanIoU = zeros([maxNumAnchors,1]);
+anchorBoxes = cell(maxNumAnchors, 1);
+for k = 1:maxNumAnchors
+    %Estimate anchors and mean IoU.
+    [anchorBoxes{k},meanIoU(k)] = estimateAnchorBoxes(trainingData,k);    
+end
+end
+
